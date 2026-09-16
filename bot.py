@@ -85,17 +85,14 @@ def stok_dusur_ve_ver(adet=1):
 
 
 def get_ana_menu_keyboard(stok_adet, user_data=None):
-    # 1. Standart/Random Hesap (15 Yıldız / 300 ApexPuan)
     h_adet = user_data.get("hesap_adet", 1) if user_data else 1
     h_yildiz = h_adet * 15
     h_puan = h_adet * 300.0
 
-    # 2. Coinli Hesap (50 Yıldız / 1000 ApexPuan)
     c_adet = user_data.get("coin_hesap_adet", 1) if user_data else 1
     c_yildiz = c_adet * 50
     c_puan = c_adet * 1000.0
 
-    # 3. Full+Full Hesap (100 Yıldız / 2000 ApexPuan)
     f_adet = user_data.get("full_hesap_adet", 1) if user_data else 1
     f_yildiz = f_adet * 100
     f_puan = f_adet * 2000.0
@@ -103,7 +100,6 @@ def get_ana_menu_keyboard(stok_adet, user_data=None):
     karaborsa_uyari = " (🔥 Karaborsa!)" if stok_adet < 5 and stok_adet > 0 else ""
 
     keyboard = [
-        # Kategori 1: Rastgele Hesap
         [
             InlineKeyboardButton("➖", callback_data="h_az"),
             InlineKeyboardButton(f"🎲 {h_adet} Adet Random ({h_yildiz} ⭐️ / +{h_puan} Puan){karaborsa_uyari}", callback_data="bos_bilgi"),
@@ -113,7 +109,6 @@ def get_ana_menu_keyboard(stok_adet, user_data=None):
             InlineKeyboardButton(f"💳 Random Al (Puan ile: +{h_puan})", callback_data="hp_al"),
             InlineKeyboardButton(f"⭐ Random Al (Yıldız ile: {h_yildiz})", callback_data="hy_al"),
         ],
-        # Kategori 2: 250-500k Coinli Hesap
         [
             InlineKeyboardButton("➖", callback_data="c_az"),
             InlineKeyboardButton(f"💰 {c_adet} Adet 250-500k Coin ({c_yildiz} ⭐️ / +{c_puan} Puan)", callback_data="bos_bilgi"),
@@ -123,7 +118,6 @@ def get_ana_menu_keyboard(stok_adet, user_data=None):
             InlineKeyboardButton(f"💳 Coinli Al (Puan ile: +{c_puan})", callback_data="cp_al"),
             InlineKeyboardButton(f"⭐ Coinli Al (Yıldız ile: {c_yildiz})", callback_data="cy_al"),
         ],
-        # Kategori 3: Full+Full Herşeyi Açık Hesap
         [
             InlineKeyboardButton("➖", callback_data="f_az"),
             InlineKeyboardButton(f"👑 {f_adet} Adet Full+Full ({f_yildiz} ⭐️ / +{f_puan} Puan)", callback_data="bos_bilgi"),
@@ -134,40 +128,32 @@ def get_ana_menu_keyboard(stok_adet, user_data=None):
             InlineKeyboardButton(f"⭐ Full Al (Yıldız ile: {f_yildiz})", callback_data="fy_al"),
         ],
         [
-            InlineKeyboardButton(
-                "⭐ Yıldız ile ApexPuan Yükle",
-                callback_data="puan_menu",
-            )
+            InlineKeyboardButton("👑 VIP Abonelik Al (300 Yıldız / Ay)", callback_data="vip_ satin_al")
         ],
         [
-            InlineKeyboardButton(
-                "🛠️ .es3 Şifre Yapıcı",
-                callback_data="es3_yapici",
-            )
+            InlineKeyboardButton("⭐ Yıldız ile ApexPuan Yükle", callback_data="puan_menu")
         ],
         [
-            InlineKeyboardButton(
-                "🔐 Şifreyi Çöz & Ödülü Kap (3 Yıldız)",
-                callback_data="sifre_baslat",
-            )
+            InlineKeyboardButton("🛠️ .es3 Şifre Yapıcı", callback_data="es3_yapici")
         ],
         [
-            InlineKeyboardButton(
-                "🎁 Bana Özel Promo Kodu Üret", callback_data="promo_kullan"
-            )
+            InlineKeyboardButton("🔐 Şifreyi Çöz & Ödülü Kap (3 Yıldız)", callback_data="sifre_baslat")
         ],
         [
-            InlineKeyboardButton(
-                "🎁 Günlük Ödül Al (10 - 50 ApexPuan)", callback_data="gunluk"
-            )
+            InlineKeyboardButton("🎁 Bana Özel Promo Kodu Üret", callback_data="promo_kullan")
         ],
-        [InlineKeyboardButton("🏆 Liderlik Tablosu", callback_data="liderlik")],
         [
-            InlineKeyboardButton(
-                "👥 Arkadaşını Davet Et (+50 ApexPuan)", callback_data="davet"
-            )
+            InlineKeyboardButton("🎁 Günlük Ödül Al", callback_data="gunluk")
         ],
-        [InlineKeyboardButton("👤 Profilim & Bilgilerim", callback_data="profil")],
+        [
+            InlineKeyboardButton("🏆 Liderlik Tablosu", callback_data="liderlik")
+        ],
+        [
+            InlineKeyboardButton("👥 Arkadaşını Davet Et (+50 ApexPuan)", callback_data="davet")
+        ],
+        [
+            InlineKeyboardButton("👤 Profilim & Bilgilerim", callback_data="profil")
+        ],
     ]
     return InlineKeyboardMarkup(keyboard)
 
@@ -191,6 +177,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "sifre_oyunu_kullanildi": False,
             "beklenen_sifre": None,
             "used_promos": [],
+            "vip_bitis": 0,
         }
         if args and args[0].startswith("ref_"):
             try:
@@ -244,6 +231,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             "sifre_oyunu_kullanildi": False,
             "beklenen_sifre": None,
             "used_promos": [],
+            "vip_bitis": 0,
         }
         veri_kaydet()
 
@@ -260,10 +248,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         mesaj = (
             "🛠️ **.es3 Şifre Yapıcı Aracı**\n\n"
             "Car Parking Multiplayer .es3 dosyalarındaki şifreleme ve düzenleme "
-            "işlemleri için bu aracı kullanabilirsin.\n\n"
-            "👉 Şimdilik aktif modüller yükleniyor, yakında dosya yükleme desteği eklenecek reis!"
+            "işlemleri için bu aracı kullanabilirsin."
         )
         await query.edit_message_text(mesaj, reply_markup=InlineKeyboardMarkup(keyboard), parse_mode="Markdown")
+
+    elif query.data == "vip_satin_al":
+        await query.answer()
+        await context.bot.send_invoice(
+            chat_id=user_id,
+            title="👑 1 Aylık VIP Abonelik",
+            description="Her gün rastgele 5 - 30 ApexPuan kazanma hakkı!",
+            payload="vip_uyelik_300",
+            currency="XTR",
+            prices=[LabeledPrice("VIP Abonelik", 300)],
+        )
 
     elif query.data == "promo_kullan":
         await query.answer()
@@ -274,7 +272,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             reply_markup=InlineKeyboardMarkup(keyboard),
         )
 
-    # Random Hesap Artır / Azalt
     elif query.data == "h_art":
         await query.answer()
         if user_data["hesap_adet"] < max(1, stok_adet if stok_adet > 0 else 1):
@@ -295,7 +292,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-    # Coinli Hesap Artır / Azalt
     elif query.data == "c_art":
         await query.answer()
         if user_data["coin_hesap_adet"] < max(1, stok_adet if stok_adet > 0 else 1):
@@ -316,7 +312,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-    # Full+Full Hesap Artır / Azalt
     elif query.data == "f_art":
         await query.answer()
         if user_data["full_hesap_adet"] < max(1, stok_adet if stok_adet > 0 else 1):
@@ -337,25 +332,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception:
             pass
 
-    # Random Hesap Puan İle Al
     elif query.data == "hp_al":
         adet = user_data.get("hesap_adet", 1)
         gerekli_puan = float(adet * 300)
-
         if user_data["carpipuan"] < gerekli_puan:
             await query.answer(f"❌ Yetersiz ApexPuan! Lazım: +{gerekli_puan}", show_alert=True)
             return
-
         if stok_adet < adet:
             await query.answer("❌ Stok kalmadı!", show_alert=True)
             return
-
         verilenler = stok_dusur_ve_ver(adet)
         if verilenler:
             await query.answer()
             user_data["carpipuan"] = round(user_data["carpipuan"] - gerekli_puan, 1)
             veri_kaydet()
-
             hesaplar_metni = "\n".join(verilenler)
             keyboard = [[InlineKeyboardButton("🔙 Menü", callback_data="ana_menu")]]
             try:
@@ -363,10 +353,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.edit_message_text(mesaj, reply_markup=InlineKeyboardMarkup(keyboard))
             except Exception:
                 await context.bot.send_message(chat_id=user_id, text=f"✅ Random VIP Hesaplar:\n\n{hesaplar_metni}")
-        else:
-            await query.answer("❌ Stok hatası!", show_alert=True)
 
-    # Random Hesap Yıldız İle Al
     elif query.data == "hy_al":
         await query.answer()
         adet = user_data.get("hesap_adet", 1)
@@ -374,7 +361,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if stok_adet < adet:
             await query.answer("❌ Stok yetersiz!", show_alert=True)
             return
-
         await context.bot.send_invoice(
             chat_id=user_id,
             title=f"{adet} Adet Random Hesap",
@@ -384,25 +370,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             prices=[LabeledPrice("Random Hesap", toplam_fiyat)],
         )
 
-    # Coinli Hesap Puan İle Al
     elif query.data == "cp_al":
         adet = user_data.get("coin_hesap_adet", 1)
         gerekli_puan = float(adet * 1000)
-
         if user_data["carpipuan"] < gerekli_puan:
             await query.answer(f"❌ Yetersiz ApexPuan! Lazım: +{gerekli_puan}", show_alert=True)
             return
-
         if stok_adet < adet:
             await query.answer("❌ Stok kalmadı!", show_alert=True)
             return
-
         verilenler = stok_dusur_ve_ver(adet)
         if verilenler:
             await query.answer()
             user_data["carpipuan"] = round(user_data["carpipuan"] - gerekli_puan, 1)
             veri_kaydet()
-
             hesaplar_metni = "\n".join(verilenler)
             keyboard = [[InlineKeyboardButton("🔙 Menü", callback_data="ana_menu")]]
             try:
@@ -410,10 +391,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.edit_message_text(mesaj, reply_markup=InlineKeyboardMarkup(keyboard))
             except Exception:
                 await context.bot.send_message(chat_id=user_id, text=f"✅ Coinli Hesaplar:\n\n{hesaplar_metni}")
-        else:
-            await query.answer("❌ Stok hatası!", show_alert=True)
 
-    # Coinli Hesap Yıldız İle Al
     elif query.data == "cy_al":
         await query.answer()
         adet = user_data.get("coin_hesap_adet", 1)
@@ -421,7 +399,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if stok_adet < adet:
             await query.answer("❌ Stok yetersiz!", show_alert=True)
             return
-
         await context.bot.send_invoice(
             chat_id=user_id,
             title=f"{adet} Adet Coinli Hesap",
@@ -431,25 +408,20 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             prices=[LabeledPrice("Coinli Hesap", toplam_fiyat)],
         )
 
-    # Full+Full Hesap Puan İle Al
     elif query.data == "fp_al":
         adet = user_data.get("full_hesap_adet", 1)
         gerekli_puan = float(adet * 2000)
-
         if user_data["carpipuan"] < gerekli_puan:
             await query.answer(f"❌ Yetersiz ApexPuan! Lazım: +{gerekli_puan}", show_alert=True)
             return
-
         if stok_adet < adet:
             await query.answer("❌ Stok kalmadı!", show_alert=True)
             return
-
         verilenler = stok_dusur_ve_ver(adet)
         if verilenler:
             await query.answer()
             user_data["carpipuan"] = round(user_data["carpipuan"] - gerekli_puan, 1)
             veri_kaydet()
-
             hesaplar_metni = "\n".join(verilenler)
             keyboard = [[InlineKeyboardButton("🔙 Menü", callback_data="ana_menu")]]
             try:
@@ -457,10 +429,7 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
                 await query.edit_message_text(mesaj, reply_markup=InlineKeyboardMarkup(keyboard))
             except Exception:
                 await context.bot.send_message(chat_id=user_id, text=f"✅ Full Hesaplar:\n\n{hesaplar_metni}")
-        else:
-            await query.answer("❌ Stok hatası!", show_alert=True)
 
-    # Full+Full Hesap Yıldız İle Al
     elif query.data == "fy_al":
         await query.answer()
         adet = user_data.get("full_hesap_adet", 1)
@@ -468,7 +437,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if stok_adet < adet:
             await query.answer("❌ Stok yetersiz!", show_alert=True)
             return
-
         await context.bot.send_invoice(
             chat_id=user_id,
             title=f"{adet} Adet Full+Full Hesap",
@@ -483,14 +451,8 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         if user_data.get("sifre_oyunu_kullanildi", False):
             await query.answer("❌ Hakkını zaten kullandın!", show_alert=True)
             return
-
         user_data["sifre_oyunu_kullanildi"] = True
         veri_kaydet()
-        try:
-            await query.edit_message_reply_markup(reply_markup=get_ana_menu_keyboard(stok_adet, user_data))
-        except Exception:
-            pass
-
         await context.bot.send_invoice(
             chat_id=user_id,
             title="🔐 Şifre Çözme Oyunu",
@@ -506,16 +468,44 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
             [InlineKeyboardButton("⭐ 100 ApexPuan ➔ 50 Yıldız", callback_data="apex_100")],
             [InlineKeyboardButton("⭐ 250 ApexPuan ➔ 120 Yıldız", callback_data="apex_250")],
             [InlineKeyboardButton("⭐ 500 ApexPuan ➔ 250 Yıldız", callback_data="apex_500")],
-            [InlineKeyboardButton("⭐ 750 ApexPuan ➔ 380 Yıldız", callback_data="apex_750")],
             [InlineKeyboardButton("⭐ 1,000 ApexPuan ➔ 500 Yıldız", callback_data="apex_1000")],
-            [InlineKeyboardButton("⭐ 1,500 ApexPuan ➔ 780 Yıldız", callback_data="apex_1500")],
             [InlineKeyboardButton("⭐ 2,000 ApexPuan ➔ 1,050 Yıldız", callback_data="apex_2000")],
-            [InlineKeyboardButton("⭐ 3,000 ApexPuan ➔ 1,600 Yıldız", callback_data="apex_3000")],
-            [InlineKeyboardButton("⭐ 4,000 ApexPuan ➔ 2,150 Yıldız", callback_data="apex_4000")],
             [InlineKeyboardButton("⭐ 5,000 ApexPuan ➔ 2,700 Yıldız", callback_data="apex_5000")],
-            [InlineKeyboardButton("⭐ 7,500 ApexPuan ➔ 4,100 Yıldız", callback_data="apex_7500")],
             [InlineKeyboardButton("⭐ 10,000 ApexPuan ➔ 5,500 Yıldız", callback_data="apex_10000")],
-            [InlineKeyboardButton("⭐ 15,000 ApexPuan ➔ 8,400 Yıldız", callback_data="apex_15000")],
-            [InlineKeyboardButton("⭐ 20,000 ApexPuan ➔ 11,200 Yıldız", callback_data="apex_20000")],
-            [InlineKeyboardButton("⭐ 30,000 ApexPuan ➔ 16,800 Yıldız", callback_data="apex_30000")],
-            [InlineKeyboardBu
+            [InlineKeyboardButton("⭐ 50,000 ApexPuan ➔ 28,000 Yıldız", callback_data="apex_50000")],
+            [InlineKeyboardButton("⭐ 100,000 ApexPuan ➔ 58,000 Yıldız", callback_data="apex_100000")],
+            [InlineKeyboardButton("🔙 Menü", callback_data="ana_menu")],
+        ]
+        await query.edit_message_reply_markup(reply_markup=InlineKeyboardMarkup(keyboard))
+
+    elif query.data.startswith("apex_"):
+        await query.answer()
+        puan_miktari = int(query.data.split("_")[1])
+        fiyat_tablosu = {
+            100: 50, 250: 120, 500: 250, 1000: 500, 2000: 1050,
+            5000: 2700, 10000: 5500, 50000: 28000, 100000: 58000
+        }
+        yildiz_fiyati = fiyat_tablosu.get(puan_miktari, 50)
+        await context.bot.send_invoice(
+            chat_id=user_id,
+            title="⭐ ApexPuan Elit Paket",
+            description=f"{puan_miktari:,} ApexPuan Yüklemesi",
+            payload=f"apex_yukle_{puan_miktari}",
+            currency="XTR",
+            prices=[LabeledPrice("ApexPuan", yildiz_fiyati)],
+        )
+
+    elif query.data == "gunluk":
+        await query.answer()
+        simdi = time.time()
+        if simdi - user_data["son_gunluk"] < 86400:
+            keyboard = [[InlineKeyboardButton("🔙 Menü", callback_data="ana_menu")]]
+            await query.edit_message_text(
+                "⏳ Günlük ödülü zaten aldın! 24 saatte bir alabilirsin.",
+                reply_markup=InlineKeyboardMarkup(keyboard),
+            )
+            return
+
+        user_data["son_gunluk"] = simdi
+        
+        # VIP Üye Kontrol
