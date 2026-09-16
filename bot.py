@@ -28,11 +28,6 @@ def home():
     return "CPM1 VIP Mağaza ApexPuan Botu Aktif!"
 
 
-def run_web():
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
-
-
 DB_FILE = "veritabani.json"
 
 
@@ -128,7 +123,7 @@ def get_ana_menu_keyboard(stok_adet, user_data=None):
             InlineKeyboardButton(f"⭐ Full Al (Yıldız ile: {f_yildiz})", callback_data="fy_al"),
         ],
         [
-            InlineKeyboardButton("👑 VIP Abonelik Al (300 Yıldız / Ay)", callback_data="vip_ satin_al")
+            InlineKeyboardButton("👑 VIP Abonelik Al (300 Yıldız / Ay)", callback_data="vip_satin_al")
         ],
         [
             InlineKeyboardButton("⭐ Yıldız ile ApexPuan Yükle", callback_data="puan_menu")
@@ -508,4 +503,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
         user_data["son_gunluk"] = simdi
         
-        # VIP Üye Kontrol
+        if user_data.get("vip_bitis", 0) > simdi:
+            kazanilan = float(random.randint(5, 30))
+            vip_mesaj = "
